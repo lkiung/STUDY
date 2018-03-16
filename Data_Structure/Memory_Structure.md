@@ -1,4 +1,5 @@
-# 1 Memory Structure
+# 0. Memory Structure
+
 파일을 실행할 때, 파일이 메모리에 저장되는 영역은 크게 아래와 같이 나뉜다. 
 ![MEMORY](https://blog.naver.com/wjdrnwk/20187403073)
 먼저 메모리의 0번지쪽부터 프로그램을 실행하기 위한 코드, 함수가 저장되는 Code영역, 전역변수가 저장되는 Data, BSS 영역, 동적 할당된 변수가 저장되는 Heap영역과 마지막으로 함수가 실행되면서 함수 내에 선언된 변수가 저장되는 Stack 영역으로 나뉜다.
@@ -31,3 +32,4 @@ int main(void)                      //CODE영역에 저장. STACK영역에�
   int *p = malloc(8*sizeof(int));   //변수 p는 int* type의 변수로 함수 내에 선언되었으므로 STACK영역에 저장! malloc을 통해 데이터를 HEAP영역에 할당하고,
 }                                   //이를 가리키기 위해 포인터 p의 값을 heap에 할당된 데이터의 주소값을 지칭하게 한것!
 ```
+
