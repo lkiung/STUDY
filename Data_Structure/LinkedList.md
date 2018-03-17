@@ -24,7 +24,7 @@ typedef struct _link
 	struct _link  * next; 
 }DATA;
 
-DATA* Head;
+DATA Head;
 int Insert(DATA * head, DATA* d);
 DATA * Search(DATA * head, int item);
 int Delete(DATA * head, int item)
@@ -101,4 +101,63 @@ Double Linked List는 next외에 prev라는 포인터를 구조체 멤버로 가
 
 Double Linked List는 head외에 Tail을 추가변수로 갖고 역방향 데이터 접근을 용이하게 하기도 한다.
 
-아래는 
+아래는 Linked List의 구현 코드이다.
+
+### 선언
+```
+typedef structure doublelink{
+	int item;
+	structure doublelink* next;
+	structure doublelink* prev;
+}DATA;
+
+DATA Head, Tail;
+int Insert(DATA * head, DATA* d);
+DATA * Search(DATA * head, int item); //Search는 차이가 없으므로 구현하지 않는다.
+int Delete(DATA * head, int item)
+
+```
+
+### Insert
+```
+int Insert(DATA * head, DATA * d)
+{
+	DATA* p = calloc(1,sizeof(DATA));
+	if(!p) return -1;
+	*p = *d;
+
+	while(head->next!=&Tail){
+		if(head->next == d->item)
+		{
+			free(p);
+			return -2;
+		}
+		if(head->next->item > d->item){ 
+			break;	
+		}
+		head=head->next;
+	}
+
+	p->prev = head;				//Prev 연결하는게 복잡하니 참고할 것!!
+	p->next = head->next;
+	head->next->prev = p;
+	head->next = p;
+	return 1;
+
+}
+```
+
+### Delete
+```
+int Delete(DATA * head, int item)
+{
+	SCORE * p = Search(head,item);		//찾은 데이터에 prev, next 정보다 다 들어있으므로 노상관!!!
+	if(!p) return -1;
+	p->next->prev = p->prev;
+	p->prev->next = p->next;
+	free(p);
+	return 1;
+
+}
+
+```
