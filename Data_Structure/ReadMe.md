@@ -5,8 +5,7 @@
 ### [3. Queue](https://github.com/lkiung/STUDY/blob/master/Data_Structure/Queue.md)
 ### [4. Linked List](https://github.com/lkiung/STUDY/blob/master/Data_Structure/LinkedList.md)
 ### [5. Stack, Queue (Heap)](https://github.com/lkiung/STUDY/blob/master/Data_Structure/QueueStack2.md)
-### 6. (Heap)
-### 7. Linked List (Static)
-### 8. Hash Table
-### 9. Binary Search Tree
-### 10. Red Black Tree
+### [6. Linked List (Static)](https://github.com/lkiung/STUDY/blob/master/Data_Structure/LinkedList2.md)
+### [7. Hash Table](https://github.com/lkiung/STUDY/blob/master/Data_Structure/HashTable.md)
+### [8. Binary Search Tree](https://github.com/lkiung/STUDY/blob/master/Data_Structure/BinarySearchTree.md)
+### [9. Red Black Tree](https://github.com/lkiung/STUDY/blob/master/Data_Structure/RedBlackTree.md)
