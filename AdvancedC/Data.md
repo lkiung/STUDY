@@ -102,3 +102,49 @@ ex) -12 in 8 bit = 11110011
 
 # 실수의 데이터 표현
 
+C에서 실수는 IEEE 754의 Floatig Point를 따른다. 
+
+Floating Point는 중학교 과학시간에 배운 실수의 표기방법으로 1.xxx*10^y 과 같이 표현하는 방식을 말한다.
+
+컴퓨터는 이진체계니까 우리는 (-1)^s * 1.xxx*2^y으로 수를 표현한다.
+
+이때 부호를 나타내는 s를 sign bit, 유효숫자(가수부)를 나타내는 xxxx를 mantisa bits(or Fragment bits), 지수를 나타내는 y를 exponent bits라 한다.
+
+각 type별 bit 할당량은 아래와 같다
+
+| Type | sign bit | exponent bits | mantissa bits  |
+|------|----------|---------------|----------------|
+| float|    1     |       8       |     23         |
+|double|    1     |      11       |      52        |
+
+
+* Normalization vs Denormalization
+
+floating point의 mantissa bit은 2진법으로 표현되므로 유효숫자가 항상 1로 시작하게 된다. (아니면 exponent를 바꾸면 됨)
+
+따라서 맨앞의 1을 제외한 나머지 범위 즉, 1.xxxxxxxx 의 x부분만 mantissa bit으로 표현하는데 이를 normalization이라 한다.
+
+반대로 exponent bits를 최소화한 값 보다 작은 값의 경우 0.000xxxx * 2^(exponents 최솟값) 으로 표현해도 유효숫자가 0으로 시작할 수 있다.
+
+이런 경우는 mantissa bits은 정수부를 포함하여 표현하게 되는데 이를 denormalization라 한다.
+
+
+* exponents bits의 범위
+
+float을 예로 들면 exponents bits는 8bit 으로 총 0~255까지 표현할 수 있게 된다. IEEE754에서는 음수범위의 지수도 표현하기 위해 bias를 127로 두고 빼는 방식을 택했다. 
+
+따라서 실제 2진법의 표현은
+
+(-1)^s * 1.mmmmmmmmmmmmmmmmmmmmmmm * 2^(eeeeeeee-127) (normalized의 경우) 가 된다.
+
+denormalized의 경우 exponents bit이 전부 0이 된다. IEEE에서는 denormalized와 normalized의 최소값에서 데이터 간격에 의한 손실을 최소화하기 위해 exponent bits이 모두 0일 경우 exponent를 -126으로 정의하였다.
+
+exponent bit과 mantissa bit에 따른 값을 아래와 같다.
+
+
+|exponent bits| mantissa bits |     의미      |
+|-------------|---------------|---------------|
+| 0000.....00 | 000000....000 |  0(sign bit에 따라 +0, -0 구분) |
+| 1111.....11 | 1xxxxx....xxx | Q_NAN(값을 정할 수 없음) |
+| 1111.....11 | 000000....000 | sign bit에 따라 +-Inf |
+| 1111.....11 | 0xxxxx....xxx | S_NAN(연산 오류/ 최소 1개bit은 1이다) |
