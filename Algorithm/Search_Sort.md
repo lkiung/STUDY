@@ -83,6 +83,95 @@ void Mergesort(int min, int max){
 }
 ```
 
+### lower bound vs upper bound
+
+Binary Search의 끝은 탐색범위 내에 찾고자 하는 ID가 존재하면 array[m] == id가 되는 것이고
+
+찾고자 하는 ID가 존재하지 않을 경우 array[min]과 array[max]의 값이 같아지면서 id가 가리키는 값을 넘어서게 된다.
+
+따라서 upper bound는 사실상 max값이 아닌 초과된 범위의 min값, lower bound는 min값이 아닌 초과된 범위의 max값이 되어야 한다.
+
+예를 들어 0,1,3,4가 있는 배열에 2, -1 ,5의 lower, upper bound를 찾는다고 가정하자.
+
+array의 min 인덱스를 s, max인덱스를 e, 중간 인덱스를 m이라 할 때, 
+
+2의 lower bound의 경우
+
+| 0 | 1 | 3 | 4 |
+|---|---|---|---|
+| s |   | m | e |
+| s | e |   |   |
+|   | e | s |   |
+
+가 되어 e가 결국 lower bound가 된다. 중간값은 e에 좀더 가깝게 잡아 m이 중간값의 위치에 갈 경우 e가 범위를 벗어나지 못하도록 하였다.
+
+-1의 경우를 들면
+
+|   |  0  | 1 | 3 | 4 |
+|---|-----|---|---|---|
+|   | s |     | m | e |
+|   | s | m,e |   |   |
+|   |s,e,m|   |   |   |
+| e | s   |   |   |   |
+
+
+이 되어 e는 범위 외의 값을 지칭하게 된다.
+
+5의 경우는 
+
+| 0 | 1 | 3 | 4   |   |
+|---|---|---|-----|---|
+| s |   | m | e   |   |
+|   |   |   |s,e,m|   |
+|   |   |   | e   | s |
+
+이 되어 e는 초기의 Max값에서 변하지 않는다. (즉 제일 lower bound는 최댓값을 지칭하게 된다)
+
+upper bound의 경우 알고리즘을 동일하게 진행하되 mean 값을 (min+max)/2로 하여 min값에 보다 가깝게 조정하였다.
+
+#### upper bound code
+```
+int BinarysearchUpper(int min, int max, int id){
+	int m;
+	int sol = min;
+	while(min<=max){
+		m = (min+max)/2;
+		if(leaf[m]==id){
+			sol = m;
+			break;
+		}
+		else if(leaf[m]<id)
+			sol = min = m+1;
+		else
+			max = m-1;
+
+	}	
+	return sol;
+}
+```
+
+### lower bound code
+```
+int BinarysearchLower(int min, int max, int id){
+	int m;
+	int sol = max;
+	while(min<=max){
+		m = (min+max+1)/2;
+		if(leaf[m]==id){
+			sol = m;
+			break;
+		}
+		else if(leaf[m]<id)
+			min = m+1;
+		else
+			sol = max = m-1;
+
+	}	
+	return sol;
+
+}
+```
+
 >ex1) 암소 야구 [Brian Dean, 2013]
 >N마리 암소 (3 <= N <= 1000)가 연속적으로 서 있으며, 각각은 숫자에 해당하는 좌표에 위치에 있습니다.
 >그들은 주변 농장의 소들과 중요한 경기를 준비하고 있습니다. 농부가 3 개의 소 (X, Y, Z) 그룹이 두 번의 던지기를 성공하는 것을 관찰합니다. 
@@ -108,6 +197,7 @@ A[t]>=k, A[t]<=2k인 t를 찾는 것이 목표이다.
 구현은 아래와 같다.
 
 ```
+#include<stdio.h>
 int leaf[1000+10];
 int temparr[1000+10];
 
@@ -127,14 +217,17 @@ void Mergesort(int min, int max){
 }
 
 
-int BinarysearchUpper(int min, int max, int id){	//drive 2k's infimum
+int BinarysearchUpper(int min, int max, int id){
 	int m;
 	int sol = min;
 	while(min<=max){
 		m = (min+max)/2;
-		
-		if(leaf[m]<id)					
-			sol = min = m+1;		//leaf[m]==d인 경우는 어차피 boundary 구하는거라 노상관
+		if(leaf[m]==id){
+			sol = m;
+			break;
+		}
+		else if(leaf[m]<id)
+			sol = min = m+1;
 		else
 			max = m-1;
 
@@ -142,12 +235,16 @@ int BinarysearchUpper(int min, int max, int id){	//drive 2k's infimum
 	return sol;
 }
 
-int BinarysearchLower(int min, int max, int id){	//drive k's supremum
+int BinarysearchLower(int min, int max, int id){
 	int m;
 	int sol = max;
 	while(min<=max){
-		m = (min+max)/2;
-		if(leaf[m]<=id)
+		m = (min+max+1)/2;
+		if(leaf[m]==id){
+			sol = m;
+			break;
+		}
+		else if(leaf[m]<id)
 			min = m+1;
 		else
 			sol = max = m-1;
@@ -165,12 +262,12 @@ int main(){
 	scanf("%d",&n);
 	for(i=0;i<n;i++)
 		scanf("%d",&leaf[i]);
-	Mergesort(0,n-1);					//데이터가 임의로 들어오기 때문에 sort 필요
+	Mergesort(0,n-1);
 	for(i=0;i<n-2;i++)
 		for(j=i+1;j<n-1;j++){
-			lb = leaf[j]+ (leaf[j]-leaf[i]);	
+			lb = leaf[j]+ (leaf[j]-leaf[i]);
 			ub = leaf[j]+ 2*(leaf[j]-leaf[i]);
-			up = BinarysearchLower(j,n-1,ub);	
+			up = BinarysearchLower(j,n-1,ub);
 			lo = BinarysearchUpper(j,n-1,lb);
 			if(up==-1 || lo==-1)
 				continue;
@@ -179,41 +276,4 @@ int main(){
 		}
 	printf("%d",sum);
 }
-
 ```
-
-
-p.s
-
-
-A가 1,3,4,7,10의 배열이 있다고 가정하자. 2를 찾을 때의 min 과 max, m을 찾을 때에는 아래와 같다
-
-
-| 2 | min  | max | m |
-|---|------|-----|---|
-|1회| 0    | 4   | 2 |
-|2회| 0    | 2   | 1 |
-|3회| (0)  | 1   | 0 |
-|4회| 0    | (0) | - |  
-
-|5,6| min  | max | m |
-|---|------|-----|---|
-|1회|  0   | 4   |(2)|
-|2회|  3   | 4   | 3 |
-
-
-|8,9| min  | max | m |
-|---|------|-----|---|
-|1회| 0    | 4   | 2 |
-|2회| 0    | 4   | 1 |
-|3회| 0    | 1   | 0 |
-|4회| 0    | 0   | - |  
-
-leaf[m]<id  min =  m 으로 해야 작은 값 획득
-
-leaf[m]>id max = m 으로 해야 큰값을 획득한다.
-
-이러면 문제가 max랑 min이랑 값이 1개만 차이날 때 문제가 발생해서 이걸 에러 처리하기에는 또 무리수....
-
- 시험 치고나서로 넘깁니다.
-
