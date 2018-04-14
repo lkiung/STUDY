@@ -39,5 +39,27 @@ xPSR: APSR(Application Program Status Register) + IPSR(Interrupt PSR) + EPSR(Exe
 
 * APSR: 연산 결과를 저장하는 PSR ( Negative: xPSR[31], Zero: xPSR[30], Carry: xPSR[29], oVerflow: xPSR[28], Q(DSP명령의 saturation): xPSR[27]
 * IPSR: Exception number를 저장 (xPSR[8:0])
-* Execution PSR: 프로그램 수행에 필요한 정보저장. (ICI/IT;Interruptible, Continuable Instruction / If-Then. LDM, STM과 같은 Multiple Memory Access 명령어 수행중, 인터럽트가 발생했을 시, 중단지점의 레지스터 순서를 저장하는 field.  :xPSP[26:25,15:10], T(Thumb인지 ARM명령어인지 저장. Cortex M은 T!=1이면 Usage Fault발생. : xPSR[24])
+* Execution PSR: 프로그램 수행에 필요한 정보저장. (ICI/IT;Interruptible, Continuable Instruction / If-Then. LDM, STM과 같은 Multiple Memory Access 명령어 수행중, 인터럽트가 발생했을 시, 중단지점의 레지스터 순서를 저장하는 field. + IT박스 명령어 수행중 인터럽트 발생시, 중단지점의 IT 옵션을 저장하는 field  :xPSP[26:25,15:10], T(Thumb인지 ARM명령어인지 저장. Cortex M은 T!=1이면 Usage Fault발생. : xPSR[24])
 
+### 4. 조건부 명령
+
+Cortex M은 분기명령에만 조건부 옵션 추가 가능. 그외의 명령어에 조건부 옵션을 쓰고 싶으면 IT(If-Then) 명령 활용.
+IT명령어에서 T는 Then, E는 Else를 나타내며 I다음은 반드시 T, 이후에는 T또는 E가 최대 3개까지 더 나올 수 있다. ( E다음 T는 나올 수 없음)
+아래는 IT블록을 사용한 예이다.
+
+```
+	cmp	r0, r1
+	ite	gt
+	movgt	r2, #-2
+	movle	r2, #0
+	it	eq
+	moveq	r2, #1
+```
+
+
+>ITXXX(IT블록)에서의 T condition과 E condition
+
+| Condition |    Z==1         |     C==1        |    N==1    |     V==1     | (C==1) && (Z==0)  |            N==V           |   (Z==0) && (N==V)     |
+|-----------|-----------------|-----------------|------------|--------------|-------------------|---------------------------|------------------------|
+|  Then     |  EQ(Equal)      |  CS(Carry Set)  |  MI(Minus) |  VS(V set)   | HI(higher)        | GE(greater than or eqaul) | GT(greater than)       |
+|  Else     |  NE(Not Equal)  | CC(Carry Clear) |  PL(Plus)  |  VC(V clear) | LS(lower or same) |    LT(less than)          | LE(less than or equal) |
