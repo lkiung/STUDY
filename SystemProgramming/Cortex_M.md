@@ -63,3 +63,18 @@ IT명령어에서 T는 Then, E는 Else를 나타내며 I다음은 반드시 T, �
 |-----------|-----------------|-----------------|------------|--------------|-------------------|---------------------------|------------------------|
 |  Then     |  EQ(Equal)      |  CS(Carry Set)  |  MI(Minus) |  VS(V set)   | HI(higher)        | GE(greater than or eqaul) | GT(greater than)       |
 |  Else     |  NE(Not Equal)  | CC(Carry Clear) |  PL(Plus)  |  VC(V clear) | LS(lower or same) |    LT(less than)          | LE(less than or equal) |
+
+
+### 5. CMSIS
+
+Cortex M에서는 peripheral register와 exception vector에 대한 이름과 이에 접근하는 함수를 인터페이스로 정의하여 다양한 미들웨어 vendors에 대해서도 통용되도록 하는 동시에 개발자가 C로도 쉽게 시스템 주변장치에 대한 제어를 할 수 있도록 하였다. 
+
+### 6. Cortex M의 Boot
+
+Cortex M을 Boot하는 방법은 아래 3가지 방법이 있다.
+
+1. Assembly language로 처음부터 다 직접 코딩한다. 이때, 주의해야 할 것은 Cortex A나 R과는 달리 M에서는 code영역의 첫번째 명령어가 stack pointer의 초기값,두번째 명령어가 PC가 시작되는 지점(즉, Reset handler의 위치)로 설정되어야 한다는 것이다. 
+
+2. BSP(Board Support Package)를 활용한다. BSP란 Board를 사용할 수 있도록 제조사에서 제공하는 Software묶음으로, Bootloader와 디바이스 드라이버를 포함한다. BSP를 Board에 porting하면 main()함수부터 프로그램이 시작하게 된다.
+
+3. 컴파일러에게 부트로드, Cstartup 다 맡기고 C로 구현한다. 이때, CMSIS의 SystemInit()함수를 먼저 호출하여 Clock의 동기화를 진행하여야 한다.
