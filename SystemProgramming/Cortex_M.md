@@ -223,20 +223,22 @@ v7-m3에서는 MMF, BF가 아닌 오류는 모두 Usage Fault로 구분한다.
 
 2) UNALIGN(unaligned access), CFSR[23]
 
-	:Data에 접근 시 
+	:Data에 접근 시 align 되지 않은 데이터 주소로 접근하면 발생한다.
 
 3) NOCP(No CP operation), CFSR[19]
 
-	:
+	:존재하지 않은 Coprocessor에 대한 명령어를 수행하면 발생한다.
 
 4) INVPC(Invalid PC), CFSR[18]
 
-	:
+	:IRQ수행후 복귀할 때, 처리한 IRQ를 지칭하는 레지스터가 맞지 않으면 발생한다.
 
 5) INVSTAT(Invalid status), CFSR[17]
 
-	:
+	:T 비트가 0일때 즉, 홀수가 아닌 PC값에 접근했을 때 발생하는 fault이다.
+
+>I_ACC_VIOL, INVSTAT, I-BUS FAULT중 어떤 것이 먼저 일어날까? v7-m에서는 PC값의 레지스터를 가져오면서 MPU에서 접근권한을 체크한다. 그 후 core 내에서 PC[0] bit을 확인하고 T bit을 업데이트 한다. 명령어가 MPU가 정의한 영역 내에는 없을 때에 BUS에 마지막으로 접근하여 명령어를 읽어온다. 따라서 PC가 fetch하는 과정에서 오류를 체크할때 가장 먼저 체크해야 하는 순서는 1) I_ACC_VIOL 2) INVSTAT 3)IBUS 순서가 된다.
 
 6) UNDEFINST(undefined instruction), CFSR[16]
 
-	:
+	:명령어를 decode하는 과정에서 해당 비트에 맞는 명령어가 정의되지 않았을 때에 발생하게 된다.
